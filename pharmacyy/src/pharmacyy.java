@@ -13,7 +13,7 @@ public class pharmacyy
 
     private static final int  MAX_DRUGS = 20;
 
-    public  void addDrug() {
+    public  void addDrug(String type1) {
         try {
             // open Excel file and get worksheet
             FileInputStream file = new FileInputStream(new File("pharmacy.xlsx"));
@@ -36,8 +36,6 @@ public class pharmacyy
             System.out.print("Enter drug price: ");
             double price = scanner.nextDouble();
             scanner.nextLine(); // consume newline character
-            System.out.print("Enter drug category (1-cosmetics, 2-prescription drugs, 3-other): ");
-            int category = scanner.nextInt();
             System.out.print("Enter drug quantity: ");
             int quantity = scanner.nextInt();
 
@@ -50,7 +48,7 @@ public class pharmacyy
             Cell cell3 = row.createCell(2);
             cell3.setCellValue(price);
             Cell cell4 = row.createCell(3);
-            cell4.setCellValue(category);
+            cell4.setCellValue(type1);
             Cell cell5 = row.createCell(4);
             cell5.setCellValue(quantity);
 
