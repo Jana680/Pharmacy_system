@@ -1,7 +1,8 @@
 import java.util.Scanner;
 
 public class Main {
-    public void mainMenu(){
+
+    public void mainMenu(String type1){
         while(true){
             System.out.println("1- Add drug");
             System.out.println("2- Remove drug");
@@ -14,7 +15,7 @@ public class Main {
             if(option==1){
                 System.out.println("add");
                 pharmacyy p =new pharmacyy();
-                p.addDrug();
+                p.addDrug(type1);
             }
             if(option==2){
                 System.out.println("remove");
@@ -47,13 +48,17 @@ public class Main {
             System.out.println("please entre the number of the option:");
             int option=input1.nextInt();
             if(option==1){
-                mainMenu();
+                String type="cosmetics";
+                mainMenu(type);
+
             }
             if(option==2){
-                mainMenu();
+                String type="prescription";
+                mainMenu(type);
             }
             if(option==3){
-                mainMenu();
+                String type ="other";
+                mainMenu(type);
             }
 
             else{
