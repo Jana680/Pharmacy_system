@@ -7,13 +7,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.Scanner;
-public class pharmacyy
-{
 
+public class pharmacyy{
 
-    private static final int  MAX_DRUGS = 20;
+    private static final int MAX_DRUGS = 20;
 
-    public  void addDrug(String type1) {
+    public void addDrug(String type1) {
         try {
             // open Excel file and get worksheet
             FileInputStream file = new FileInputStream(new File("pharmacy.xlsx"));
@@ -39,24 +38,40 @@ public class pharmacyy
             System.out.print("Enter drug quantity: ");
             int quantity = scanner.nextInt();
 
-            // create new row and cells and set values
-            Row row = sheet.createRow(maxRows + 1);
-            Cell cell1 = row.createCell(0);
-            cell1.setCellValue(name);
-            Cell cell2 = row.createCell(1);
-            cell2.setCellValue(id);
-            Cell cell3 = row.createCell(2);
-            cell3.setCellValue(price);
-            Cell cell4 = row.createCell(3);
-            cell4.setCellValue(type1);
-            Cell cell5 = row.createCell(4);
-            cell5.setCellValue(quantity);
+            // check if drug already exists in sheet
+            boolean drugExists = false;
+            for (int i = 1; i <= maxRows; i++) {
+                Row row = sheet.getRow(i);
+                if (row.getCell(1).getStringCellValue().equals(id)) {
+                    int currentQuantity = (int) row.getCell(4).getNumericCellValue();
+                    row.getCell(4).setCellValue(currentQuantity + quantity);
+                    drugExists = true;
+                    break;
+                }
+            }
+            System.out.println("Drug is already exsists.");
+
+            // add new row for drug if it doesn't exist
+            if (!drugExists) {
+                Row row = sheet.createRow(maxRows + 1);
+                Cell cell1 = row.createCell(0);
+                cell1.setCellValue(name);
+                Cell cell2 = row.createCell(1);
+                cell2.setCellValue(id);
+                Cell cell3 = row.createCell(2);
+                cell3.setCellValue(price);
+                Cell cell4 = row.createCell(3);
+                cell4.setCellValue(type1);
+                Cell cell5 = row.createCell(4);
+                cell5.setCellValue(quantity);
+                System.out.println("Drug added to pharmacy successfully.");
+            }
 
             // save changes to Excel file
             FileOutputStream fileOut = new FileOutputStream(new File("pharmacy.xlsx"));
             workbook.write(fileOut);
             fileOut.close();
-            System.out.println("New drug added to pharmacy successfully.");
+           // System.out.println("Drug added to pharmacy successfully.");
 
             // close Excel file
             workbook.close();
@@ -65,5 +80,4 @@ public class pharmacyy
             e.printStackTrace();
         }
     }
-
 }
