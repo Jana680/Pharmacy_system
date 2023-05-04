@@ -12,7 +12,14 @@ public class Main {
             Scanner input1= new Scanner(System.in);
             System.out.println("please entre the number of the option:");
             int option=input1.nextInt();
+
             if(option==1){
+                String typ1=type1;
+                if(type1=="other"){
+                    System.out.println("enter the type of product");
+                    typ1=input1.next();
+                }
+                type1=typ1;
                 System.out.println("add");
                 pharmacyy p =new pharmacyy();
                 p.addDrug(type1);
@@ -71,5 +78,5 @@ public class Main {
     public static void main(String[] args) {
         Main obj1= new Main();
         obj1.menuMain();
-}
+    }
 }
