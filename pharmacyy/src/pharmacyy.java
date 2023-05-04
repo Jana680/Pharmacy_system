@@ -3,12 +3,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.Scanner;
 
-public class pharmacyy{
+class pharmacyy {
 
     private static final int MAX_DRUGS = 20;
 
@@ -42,14 +43,14 @@ public class pharmacyy{
             boolean drugExists = false;
             for (int i = 1; i <= maxRows; i++) {
                 Row row = sheet.getRow(i);
-                if (row.getCell(1).getStringCellValue().equals(id)) {
+                if (row.getCell(1).getCellTypeEnum() == CellType.STRING && row.getCell(1).getStringCellValue().equals(id)) {
                     int currentQuantity = (int) row.getCell(4).getNumericCellValue();
                     row.getCell(4).setCellValue(currentQuantity + quantity);
                     drugExists = true;
+                    System.out.println("Drug already exists. Quantity updated.");
                     break;
                 }
             }
-            System.out.println("Drug is already exsists.");
 
             // add new row for drug if it doesn't exist
             if (!drugExists) {
@@ -71,7 +72,6 @@ public class pharmacyy{
             FileOutputStream fileOut = new FileOutputStream(new File("pharmacy.xlsx"));
             workbook.write(fileOut);
             fileOut.close();
-           // System.out.println("Drug added to pharmacy successfully.");
 
             // close Excel file
             workbook.close();
