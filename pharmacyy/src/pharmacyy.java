@@ -80,4 +80,52 @@ class pharmacyy {
             e.printStackTrace();
         }
     }
-}
+
+    public void removeDrug() {
+
+            try {
+                // Open Excel file and get worksheet
+                FileInputStream file = new FileInputStream(new File("pharmacy.xlsx"));
+                XSSFWorkbook workbook = new XSSFWorkbook(file);
+                XSSFSheet sheet = workbook.getSheetAt(0);
+
+                // Get drug ID to remove from the user
+                Scanner scanner = new Scanner(System.in);
+                System.out.print("Enter drug ID to remove: ");
+                String idToRemove = scanner.nextLine();
+
+                // Search for drug by ID
+                int maxRows = sheet.getLastRowNum();
+                boolean drugFound = false;
+                for (int i = 1; i <= maxRows; i++) {
+                    Row row = sheet.getRow(i);
+                    if (row.getCell(1).getCellTypeEnum() == CellType.STRING && row.getCell(1).getStringCellValue().equals(idToRemove)) {
+                        //sheet.shiftRows(i + 1, maxRows - 1, -1); // Shift cells upward
+                        sheet.removeRow(row);
+                        sheet.shiftRows(i + 1, maxRows, -1); // Shift cells upward
+                         // Remove the row
+
+                        drugFound = true;
+                        System.out.println("Drug removed from the pharmacy successfully.");
+                        break;
+                    }
+                }
+
+                // Handle drug not found case
+                if (!drugFound) {
+                    System.out.println("Drug not found in the pharmacy.");
+                }
+
+                // Save changes to the Excel file
+                FileOutputStream fileOut = new FileOutputStream(new File("pharmacy.xlsx"));
+                workbook.write(fileOut);
+                fileOut.close();
+
+                // Close Excel file
+                workbook.close();
+                file.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
