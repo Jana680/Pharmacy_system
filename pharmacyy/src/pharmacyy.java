@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Random;
 
 class pharmacyy {
 
@@ -21,7 +22,7 @@ class pharmacyy {
     public void addDrug(String type1) throws InputMismatchException {
         try {
             // open Excel file and get worksheet
-            FileInputStream file = new FileInputStream(new File("pharmacyy.xlsx"));
+            FileInputStream file = new FileInputStream(new File("D://Advanced//pharmacy//pharmacy.xlsx"));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
 
@@ -36,29 +37,46 @@ class pharmacyy {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Enter drug name: ");
             String name = scanner.nextLine();
-            System.out.print("Enter drug ID: ");
-            String id = scanner.nextLine();
-            System.out.print("Enter drug price: ");
-            double price = scanner.nextDouble();
-            scanner.nextLine(); // consume newline character
-            System.out.print("Enter drug quantity: ");
-            int quantity = scanner.nextInt();
 
+            int id ;
+            double price;
+            int quantity ;
+            String check1;
             // check if drug already exists in sheet
             boolean drugExists = false;
-            for (int i = 1; i <= maxRows; i++) {
-                Row row = sheet.getRow(i);
-                if (row.getCell(1).getCellTypeEnum() == CellType.STRING && row.getCell(1).getStringCellValue().equals(id)) {
-                    int currentQuantity = (int) row.getCell(4).getNumericCellValue();
-                    row.getCell(4).setCellValue(currentQuantity + quantity);
-                    drugExists = true;
-                    System.out.println("Drug already exists. Quantity updated.");
-                    break;
-                }
-            }
 
+                for (int i = 1; i <= maxRows; i++) {
+                    Row row = sheet.getRow(i);
+                    if (row.getCell(0).getCellTypeEnum() == CellType.STRING && row.getCell(0).getStringCellValue().equals(name)) {
+                        System.out.println("the drug already exist! it's quantity: "+row.getCell(4));
+                        System.out.println("do you want to add more quantity? (yes/no)");
+                        check1=scanner.next();
+                        if(check1.equals("yes")){
+                            System.out.print("Enter drug quantity: ");
+                            quantity = scanner.nextInt();
+                            int currentQuantity = (int) row.getCell(4).getNumericCellValue();
+                            row.getCell(4).setCellValue(currentQuantity + quantity);
+                            drugExists = true;
+                            System.out.println("Drug already exists. Quantity updated.");
+                            System.out.println("the quantity is:"+row.getCell(4));
+                            break;}
+                        else{
+                            drugExists=true;
+                            break;
+                        }
+                    }
+
+                }
             // add new row for drug if it doesn't exist
             if (!drugExists) {
+
+                System.out.print("Enter drug price: ");
+                price = scanner.nextDouble();
+                scanner.nextLine(); // consume newline character
+                System.out.print("Enter drug quantity: ");
+                quantity = scanner.nextInt();
+                Random r1=new Random();
+                id=r1.nextInt(100);
                 Row row = sheet.createRow(maxRows + 1);
                 Cell cell1 = row.createCell(0);
                 cell1.setCellValue(name);
@@ -74,7 +92,7 @@ class pharmacyy {
             }
 
             // save changes to Excel file
-            FileOutputStream fileOut = new FileOutputStream(new File("pharmacyy.xlsx"));
+            FileOutputStream fileOut = new FileOutputStream(new File("D://Advanced//pharmacy//pharmacy.xlsx"));
             workbook.write(fileOut);
             fileOut.close();
 
@@ -89,14 +107,14 @@ class pharmacyy {
     public void removeDrug() {
         try {
             // Open Excel file and get worksheet
-            FileInputStream file = new FileInputStream(new File("pharmacyy.xlsx"));
+            FileInputStream file = new FileInputStream(new File("D://Advanced//pharmacy//pharmacy.xlsx"));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
 
             // Get drug ID to remove
             Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter drug ID to remove: ");
-            String idToRemove = scanner.nextLine();
+            System.out.print("Enter drug name to remove: ");
+            String nameToRemove = scanner.nextLine();
             System.out.println(" 1- remove a quantity:  ");
             System.out.println("2- remove the entire row: ");
             int removeOption = scanner.nextInt();
@@ -107,7 +125,7 @@ class pharmacyy {
             int rowIndexToRemove = -1;
             for (int i = 1; i <= maxRows; i++) {
                 Row row = sheet.getRow(i);
-                if (row.getCell(1).getCellTypeEnum() == CellType.STRING && row.getCell(1).getStringCellValue().equals(idToRemove)) {
+                if (row.getCell(0).getCellTypeEnum() == CellType.STRING && row.getCell(0).getStringCellValue().equals(nameToRemove)) {
                     drugFound = true;
                     rowIndexToRemove = i;
                     break;
@@ -148,12 +166,12 @@ class pharmacyy {
                     }
                 }
             } else {
-                System.out.println("Drug with ID " + idToRemove + " not found in pharmacy.");
+                System.out.println("Drug with ID " + nameToRemove + " not found in pharmacy.");
             }
 
 
             // Save changes to Excel file
-            FileOutputStream fileOut = new FileOutputStream(new File("pharmacyy.xlsx"));
+            FileOutputStream fileOut = new FileOutputStream(new File("D://Advanced//pharmacy//pharmacy.xlsx"));
             workbook.write(fileOut);
             fileOut.close();
 
@@ -166,129 +184,131 @@ class pharmacyy {
     }
 
     public void placeAnOrder() throws InputMismatchException {
-            try {
-                FileInputStream file = new FileInputStream(new File("pharmacyy.xlsx"));
-                XSSFWorkbook workbook = new XSSFWorkbook(file);
-                XSSFSheet sheet = workbook.getSheetAt(0);
+        try {
+            FileInputStream file = new FileInputStream(new File("D://Advanced//pharmacy//pharmacy.xlsx"));
+            XSSFWorkbook workbook = new XSSFWorkbook(file);
+            XSSFSheet sheet = workbook.getSheetAt(0);
 
-                Scanner scanner = new Scanner(System.in);
-                double totalSalesAllDays = 0.0;
+            Scanner scanner = new Scanner(System.in);
+            double totalSalesAllDays=0.0;
+            boolean drugFound=false ;
+            double totalSales=0.0 ;
+            int totalQuantity=0 ;
+            double totalPrice;
 
-                while (true) {
-                    System.out.print("Enter drug ID to check availability (or 'exit' to quit): ");
-                    String idToCheck = scanner.nextLine().trim();
+            while (true) {
+                System.out.print("Enter drug name to check availability (or 'exit' to quit): ");
+                String nameToCheck = scanner.nextLine().trim();
 
-                    if (idToCheck.equalsIgnoreCase("exit")) {
-                        break;
+                if (nameToCheck.equalsIgnoreCase("exit")) {
+                    break;
+                }
+
+
+                for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                    Row row = sheet.getRow(i);
+                    Cell nameCell1 = row.getCell(0);
+                    String cellValue = "";
+
+                    CellType nameCellType = nameCell1.getCellTypeEnum();
+                    if (nameCellType == CellType.STRING) {
+                        cellValue = nameCell1.getStringCellValue().trim();
+                    } else if (nameCellType == CellType.NUMERIC) {
+                        cellValue = String.valueOf((int) nameCell1.getNumericCellValue());
                     }
 
-                    boolean drugFound = false;
-                    double totalSales = 0.0;
-                    int totalQuantity = 0;
+                    if (nameCellType == CellType.STRING && cellValue.equalsIgnoreCase(nameToCheck)) {
+                        drugFound = true;
+                        Cell nameCell = row.getCell(0);
+                        Cell unitPriceCell = row.getCell(2);
+                        Cell categoryCell = row.getCell(3);
+                        Cell quantityCell = row.getCell(4);
 
-                    for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                        Row row = sheet.getRow(i);
-                        Cell idCell = row.getCell(1);
-                        String cellValue = "";
+                        String drugName = nameCell.getStringCellValue();
+                        double unitPrice = 0.0;
+                        double quantity = quantityCell.getNumericCellValue();
 
-                        CellType idCellType = idCell.getCellTypeEnum();
-                        if (idCellType == CellType.STRING) {
-                            cellValue = idCell.getStringCellValue().trim();
-                        } else if (idCellType == CellType.NUMERIC) {
-                            cellValue = String.valueOf((int) idCell.getNumericCellValue());
-                        }
-
-                        if (idCellType == CellType.STRING && cellValue.equalsIgnoreCase(idToCheck)) {
-                            drugFound = true;
-                            Cell nameCell = row.getCell(0);
-                            Cell unitPriceCell = row.getCell(2);
-                            Cell categoryCell = row.getCell(3);
-                            Cell quantityCell = row.getCell(4);
-
-                            String drugName = nameCell.getStringCellValue();
-                            double unitPrice = 0.0;
-                            double quantity = quantityCell.getNumericCellValue();
-
-                            CellType unitPriceCellType = unitPriceCell.getCellTypeEnum();
-                            if (unitPriceCellType == CellType.NUMERIC) {
-                                unitPrice = unitPriceCell.getNumericCellValue();
-                            } else if (unitPriceCellType == CellType.STRING) {
-                                try {
-                                    unitPrice = Double.parseDouble(unitPriceCell.getStringCellValue());
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Invalid unit price for drug with ID " + idToCheck);
-                                    break;
-                                }
-                            }
-
-                            String category = categoryCell.getStringCellValue();
-
-                            if (category.equals("cosmetics")) {
-                                unitPrice *= 1.2;
-                            }
-
-                            System.out.println("Drug: " + drugName);
-                            System.out.println("Unit Price: " + unitPrice);
-                            System.out.print("Enter quantity: ");
-                            int orderedQuantity = scanner.nextInt();
-                            scanner.nextLine(); // Consume the newline character
-
-                            if (orderedQuantity > quantity) {
-                                System.out.println("Insufficient quantity available.");
+                        CellType unitPriceCellType = unitPriceCell.getCellTypeEnum();
+                        if (unitPriceCellType == CellType.NUMERIC) {
+                            unitPrice = unitPriceCell.getNumericCellValue();
+                        } else if (unitPriceCellType == CellType.STRING) {
+                            try {
+                                unitPrice = Double.parseDouble(unitPriceCell.getStringCellValue());
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid unit price for drug with name " + nameToCheck);
                                 break;
                             }
+                        }
 
-                            quantity -= orderedQuantity;
-                            quantityCell.setCellValue(quantity);
-                            double totalPrice = unitPrice * orderedQuantity;
-                            totalSales += totalPrice;
-                            totalQuantity += orderedQuantity;
+                        String category = categoryCell.getStringCellValue();
 
-                            String user = categoryCell.getStringCellValue();
-                            if (user.equals("prescription")) {
-                                System.out.print("Prescription required. Do you have a prescription? (yes/no): ");
-                                String prescriptionResponse = scanner.nextLine().trim().toLowerCase();
-                                if (prescriptionResponse.equals("no")) {
-                                   // System.out.println("Sorry, you need a prescription
-                                    System.out.println("Sorry, you need a prescription to purchase this drug.");
-                                    break;
-                                }
-                            }
+                        if (category.equals("cosmetics")) {
+                            unitPrice *= 1.2;
+                        }
 
-                            System.out.println("Total Price: " + totalPrice);
-                            System.out.println("Order placed successfully.");
+                        System.out.println("Drug: " + drugName);
+                        System.out.println("Unit Price: " + unitPrice);
+                        System.out.print("Enter quantity: ");
+                        int orderedQuantity = scanner.nextInt();
+                        scanner.nextLine(); // Consume the newline character
+
+                        if (orderedQuantity > quantity) {
+                            System.out.println("Insufficient quantity available.");
                             break;
                         }
-                    }
 
-                    if (!drugFound) {
-                        System.out.println("Drug with ID " + idToCheck + " not found in pharmacy.");
-                    }
+                        quantity -= orderedQuantity;
+                        quantityCell.setCellValue(quantity);
+                         totalPrice = unitPrice * orderedQuantity;
+                        totalSales += totalPrice;
+                        totalQuantity += orderedQuantity;
 
-                    totalSalesAllDays += totalSales;
-                    System.out.println("Total Sales for the day: " + totalSales);
-                    System.out.println("Total Quantity for the day: " + totalQuantity);
+                        String user = categoryCell.getStringCellValue();
+                        if (user.equals("prescription")) {
+                            System.out.print("Prescription required. Do you have a prescription? (yes/no): ");
+                            String prescriptionResponse = scanner.nextLine().trim().toLowerCase();
+                            if (prescriptionResponse.equals("no")) {
+                                // System.out.println("Sorry, you need a prescription
+                                System.out.println("Sorry, you need a prescription to purchase this drug.");
+                                break;
+                            }
+                        }
 
-                    System.out.print("Do you want to place another order? (yes/no): ");
-                    String response = scanner.nextLine().trim().toLowerCase();
-
-                    if (!response.equals("yes")) {
+                        System.out.println("Total Price: " + totalPrice);
+                        System.out.println("Order placed successfully.");
                         break;
                     }
                 }
 
-                System.out.println("Total Sales for all days: " + totalSalesAllDays);
+                if (!drugFound) {
+                    System.out.println("Drug with name " + nameToCheck + " not found in pharmacy.");
+                }
 
-                FileOutputStream outFile = new FileOutputStream(new File("pharmacyy.xlsx"));
-                workbook.write(outFile);
-                outFile.close();
+//                totalSalesAllDays += totalSales;
+                System.out.println("Total Sales for the day: " + totalSales);
+                System.out.println("Total Quantity for the day: " + totalQuantity);
 
-                workbook.close();
-                file.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                System.out.print("Do you want to place another order? (yes/no): ");
+                String response = scanner.nextLine().trim().toLowerCase();
+
+                if (!response.equals("yes")) {
+                    break;
+                }
             }
+
+            System.out.println("Total Sales for all days: " + totalSales);
+
+            FileOutputStream outFile = new FileOutputStream(new File("D://Advanced//pharmacy//pharmacy.xlsx"));
+            workbook.write(outFile);
+            outFile.close();
+
+            workbook.close();
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+}
+
 
 
