@@ -5,6 +5,9 @@ import java.util.Scanner;
 public class Main {
 
     public void mainMenu(String type1) {
+        Scanner input1 = new Scanner(System.in);
+        Scanner input2 = new Scanner(System.in);
+        pharmacyy p = new pharmacyy();
         while (true) {
             System.out.println("1- Add drug");
             System.out.println("2- Remove drug");
@@ -12,13 +15,8 @@ public class Main {
             System.out.println("4- Get the total sales for one day");
             System.out.println("5-return to mainmenu :");
             System.out.println("6- Exit");
-            Scanner input1 = new Scanner(System.in);
-            Scanner input2 = new Scanner(System.in);
-
             System.out.println("please entre the number of the option:");
             int option = input1.nextInt();
-            pharmacyy p = new pharmacyy();
-
             if (option == 1) {
                 try {
                     String typ1 = type1;
@@ -67,13 +65,17 @@ public class Main {
     }
 
     public void menuMain() {
-
+        Scanner input1 = new Scanner(System.in);
+        System.out.println("Enter the value of the capacity:");
+        int capacity=input1.nextInt();
+        pharmacyy p = new pharmacyy();
+        p.setCapacity(capacity);
         while (true) {
             System.out.println("1- Cosmetics");
             System.out.println("2- Prescription drugs");
             System.out.println("3- Others");
             System.out.println("4- put any integer value to terminate:");
-            Scanner input1 = new Scanner(System.in);
+
             System.out.println("please entre the number of the option:");
             int option = input1.nextInt();
             if (option == 1) {
@@ -93,9 +95,7 @@ public class Main {
                 break;
             }
         }
-
     }
-
     public static void main(String[] args) {
         Main obj1 = new Main();
         obj1.menuMain();
