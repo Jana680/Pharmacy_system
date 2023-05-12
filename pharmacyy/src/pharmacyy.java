@@ -16,8 +16,15 @@ import java.util.Random;
 
 class pharmacyy {
 
-    private static final int MAX_DRUGS = 20;
-    //private HashMap<K, Integer> drugQuantityMap;
+    private int capacity;
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
 
     public void addDrug(String type1) throws InputMismatchException {
         try {
@@ -28,7 +35,7 @@ class pharmacyy {
 
             // check if there is room for a new drug
             int maxRows = sheet.getLastRowNum();
-            if (maxRows >= MAX_DRUGS) {
+            if (maxRows >= capacity) {
                 System.out.println("Sorry, the pharmacy is full and cannot add any more drugs.");
                 return;
             }
@@ -38,35 +45,35 @@ class pharmacyy {
             System.out.print("Enter drug name: ");
             String name = scanner.nextLine();
 
-            int id ;
+            int id;
             double price;
-            int quantity ;
+            int quantity;
             String check1;
             // check if drug already exists in sheet
             boolean drugExists = false;
 
-                for (int i = 1; i <= maxRows; i++) {
-                    Row row = sheet.getRow(i);
-                    if (row.getCell(0).getCellTypeEnum() == CellType.STRING && row.getCell(0).getStringCellValue().equals(name)) {
-                        System.out.println("the drug already exist! it's quantity: "+row.getCell(4));
-                        System.out.println("do you want to add more quantity? (yes/no)");
-                        check1=scanner.next();
-                        if(check1.equals("yes")){
-                            System.out.print("Enter drug quantity: ");
-                            quantity = scanner.nextInt();
-                            int currentQuantity = (int) row.getCell(4).getNumericCellValue();
-                            row.getCell(4).setCellValue(currentQuantity + quantity);
-                            drugExists = true;
-                            System.out.println("Drug already exists. Quantity updated.");
-                            System.out.println("the quantity is:"+row.getCell(4));
-                            break;}
-                        else{
-                            drugExists=true;
-                            break;
-                        }
+            for (int i = 1; i <= maxRows; i++) {
+                Row row = sheet.getRow(i);
+                if (row.getCell(0).getCellTypeEnum() == CellType.STRING && row.getCell(0).getStringCellValue().equals(name)) {
+                    System.out.println("the drug already exist! it's quantity: " + row.getCell(4));
+                    System.out.println("do you want to add more quantity? (yes/no)");
+                    check1 = scanner.next();
+                    if (check1.equals("yes")) {
+                        System.out.print("Enter drug quantity: ");
+                        quantity = scanner.nextInt();
+                        int currentQuantity = (int) row.getCell(4).getNumericCellValue();
+                        row.getCell(4).setCellValue(currentQuantity + quantity);
+                        drugExists = true;
+                        System.out.println("Drug already exists. Quantity updated.");
+                        System.out.println("the quantity is:" + row.getCell(4));
+                        break;
+                    } else {
+                        drugExists = true;
+                        break;
                     }
-
                 }
+
+            }
             // add new row for drug if it doesn't exist
             if (!drugExists) {
 
@@ -75,8 +82,8 @@ class pharmacyy {
                 scanner.nextLine(); // consume newline character
                 System.out.print("Enter drug quantity: ");
                 quantity = scanner.nextInt();
-                Random r1=new Random();
-                id=r1.nextInt(100);
+                Random r1 = new Random();
+                id = r1.nextInt(100);
                 Row row = sheet.createRow(maxRows + 1);
                 Cell cell1 = row.createCell(0);
                 cell1.setCellValue(name);
@@ -190,10 +197,10 @@ class pharmacyy {
             XSSFSheet sheet = workbook.getSheetAt(0);
 
             Scanner scanner = new Scanner(System.in);
-            double totalSalesAllDays=0.0;
-            boolean drugFound=false ;
-            double totalSales=0.0 ;
-            int totalQuantity=0 ;
+            double totalSalesAllDays = 0.0;
+            boolean drugFound = false;
+            double totalSales = 0.0;
+            int totalQuantity = 0;
             double totalPrice;
 
             while (true) {
@@ -259,7 +266,7 @@ class pharmacyy {
 
                         quantity -= orderedQuantity;
                         quantityCell.setCellValue(quantity);
-                         totalPrice = unitPrice * orderedQuantity;
+                        totalPrice = unitPrice * orderedQuantity;
                         totalSales += totalPrice;
                         totalQuantity += orderedQuantity;
 
@@ -309,6 +316,3 @@ class pharmacyy {
         }
     }
 }
-
-
-
