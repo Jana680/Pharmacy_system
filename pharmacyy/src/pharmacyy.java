@@ -8,11 +8,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Random;
+import java.util.*;
 
 class pharmacyy {
 
@@ -24,6 +20,97 @@ class pharmacyy {
 
     public int getCapacity() {
         return capacity;
+    }
+
+    public void mainMenu(String type1) {
+
+        Scanner input1 = new Scanner(System.in);
+        Scanner input2 = new Scanner(System.in);
+        pharmacyy p = new pharmacyy();
+        while (true) {
+            System.out.println("1- Add drug");
+            System.out.println("2- Remove drug");
+            System.out.println("3- Place an order");
+            System.out.println("4- Get the total sales for one day");
+            System.out.println("5-return to mainmenu :");
+            System.out.println("6- Exit");
+            System.out.println("please entre the number of the option:");
+            int option = input1.nextInt();
+            if (option == 1) {
+                try {
+                    String typ1 = type1;
+                    if (Objects.equals(type1, "other")) {
+                        System.out.println("enter the type of product");
+                        typ1 = input2.nextLine();
+                    }
+                    type1 = typ1;
+                    System.out.println("add");
+                    p.addDrug(type1);
+                } catch (InputMismatchException e2) {
+                    System.out.println(e2.toString());
+                    p.addDrug(type1);
+                }
+            }
+            if (option == 2) {
+                System.out.println("remove");
+                p.removeDrug();
+            }
+            if (option == 3) {
+                try {
+                    System.out.println("place an order");
+
+                    p.placeAnOrder();
+
+                } catch (InputMismatchException e) {
+                    System.out.println(e.toString());
+                    p.placeAnOrder();
+                }
+            }
+            if (option == 4) {
+                System.out.println("Get the total sales for one day");
+            }
+            if(option==5){
+                mainmenuf();
+            }
+            if (option == 6) {
+                System.out.println("exit");
+                break;
+            }
+        }
+    }
+
+    public void  mainmenuf(){
+        Scanner input1 = new Scanner(System.in);
+        System.out.println("Enter the value of the capacity:");
+        int capacity=input1.nextInt();
+        pharmacyy p = new pharmacyy();
+        p.setCapacity(capacity);
+        while (true) {
+            System.out.println("1- Cosmetics");
+            System.out.println("2- Prescription drugs");
+            System.out.println("3- Others");
+            System.out.println("4- put any integer value to terminate:");
+
+            System.out.println("please entre the number of the option:");
+            int option = input1.nextInt();
+            if (option == 1) {
+                String type = "cosmetics";
+                mainMenu(type);
+
+            }
+            if (option == 2) {
+                String type = "prescription";
+                mainMenu(type);
+            }
+            if (option == 3) {
+                String type = "other";
+                mainMenu(type);
+            } else {
+                System.out.println("the system is terminate!");
+                break;
+            }
+        }
+
     }
 
     public void addDrug(String type1) throws InputMismatchException {
@@ -110,7 +197,6 @@ class pharmacyy {
             e.printStackTrace();
         }
     }
-
     public void removeDrug() {
         try {
             // Open Excel file and get worksheet
@@ -125,7 +211,6 @@ class pharmacyy {
             System.out.println(" 1- remove a quantity:  ");
             System.out.println("2- remove the entire row: ");
             int removeOption = scanner.nextInt();
-
             // Search for drug by ID
             int maxRows = sheet.getLastRowNum();
             boolean drugFound = false;
@@ -138,8 +223,6 @@ class pharmacyy {
                     break;
                 }
             }
-
-
             if (drugFound) {
                 if (rowIndexToRemove == -1) {
                     System.out.println("Unexpected error occurred while trying to remove the drug.");
@@ -175,13 +258,10 @@ class pharmacyy {
             } else {
                 System.out.println("Drug with ID " + nameToRemove + " not found in pharmacy.");
             }
-
-
             // Save changes to Excel file
             FileOutputStream fileOut = new FileOutputStream(new File("D://Advanced//pharmacy//pharmacy.xlsx"));
             workbook.write(fileOut);
             fileOut.close();
-
             // Close Excel file
             workbook.close();
             file.close();
@@ -189,7 +269,6 @@ class pharmacyy {
             e.printStackTrace();
         }
     }
-
     public void placeAnOrder() throws InputMismatchException {
         try {
             FileInputStream file = new FileInputStream(new File("D://Advanced//pharmacy//pharmacy.xlsx"));
@@ -313,6 +392,6 @@ class pharmacyy {
             file.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
+}
+}
 }
